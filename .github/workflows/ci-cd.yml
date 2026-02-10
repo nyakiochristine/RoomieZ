@@ -1,0 +1,61 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    services:
+      mongo:  # ← ADDED MONGODB SERVICE
+        image: mongo:7
+        ports:
+          - 27017:27017
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - name: Install backend deps
+      run: cd backend && npm ci
+    - name: Test backend
+      run: cd backend && npm test
+      env:
+        MONGO_URI: mongodb://localhost:27017/testdb  # ← FIXED URI
+
+  test-frontend:  # ← SIMPLIFIED - skips if no frontend yet
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Check if frontend exists
+      id: frontend-check
+      run: |
+        if [ -d "frontend" ]; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
+        fi
+    - name: Setup Node.js
+      if: steps.frontend-check.outputs.exists == 'true'
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - name: Install frontend deps
+      if: steps.frontend-check.outputs.exists == 'true'
+      run: cd frontend && npm ci
+    - name: Test & build frontend
+      if: steps.frontend-check.outputs.exists == 'true'
+      run: cd frontend && npm test && npm run build
+
+  deploy:
+    needs: [test-backend]  # ← Only needs backend for now
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+    - name: Show success message
+      run: echo "✅ CI/CD Pipeline SUCCESS! Backend tests passed with MongoDB!"
