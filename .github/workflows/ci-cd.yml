@@ -10,7 +10,7 @@ jobs:
   test-backend:
     runs-on: ubuntu-latest
     services:
-      mongo:  # ← ADDED MONGODB SERVICE
+      mongo:  # ← ADDED MONGODB
         image: mongo:7
         ports:
           - 27017:27017
@@ -27,7 +27,7 @@ jobs:
       env:
         MONGO_URI: mongodb://localhost:27017/testdb  # ← FIXED URI
 
-  test-frontend:  # ← SIMPLIFIED - skips if no frontend yet
+  test-frontend:  #  skip if no frontend yet
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
