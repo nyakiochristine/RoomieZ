@@ -1,54 +1,63 @@
-// backend/src/routes/matches.js
 const express = require('express');
-const Profile = require('../models/Profile');
-const Questionnaire = require('../models/Questionnaire');
-
 const router = express.Router();
+const Questionnaire = require('../models/Questionnaire');
+const Profile = require('../models/Profile');
+const { computeCompatibility } = require('../utils/matcher'); // Importing logic for Person 1 & 3 [cite: 147, 159]
+const auth = require('../middleware/auth'); 
 
-// For now, just return mock matches based on dummy scores
-function computeCompatibility(userA, userB) {
-  // This is a placeholder for later AI‑style logic
-  const sleepDiff = Math.abs(userA.sleepHours - userB.sleepHours);
-  const cleanDiff = Math.abs(userA.cleanliness - userB.cleanliness);
-  const budgetOverlap =
-    Math.min(userA.budgetMax, userB.budgetMax) - Math.max(userA.budgetMin, userB.budgetMin);
-  const budgetFraction =
-    budgetOverlap / Math.max(userA.budgetMax - userA.budgetMin, 1);
+// GET /api/matches - Retrieve a ranked list of compatible roommates [cite: 28, 50]
+router.get('/', auth, async (req, res) => {
+  try {
+    // 1. Fetch the current user's data [cite: 46]
+    const myData = await Questionnaire.findOne({ userId: req.user.userId });
+    const myProfile = await Profile.findOne({ userId: req.user.userId });
 
-  let score = 0;
-  score += 30 - sleepDiff * 3;        // 0–30
-  score += 20 - cleanDiff * 4;        // 0–20
-  score += budgetFraction * 30;       // 0–30
-  score += 20 * Math.random();        // add some randomness
+    // Ensure the user has completed the required steps before matching [cite: 26]
+    if (!myData || !myProfile) {
+      return res.status(400).json({ 
+        error: "Please complete your profile and questionnaire before viewing matches." 
+      });
+    }
 
-  return Math.min(100, Math.max(0, score));
-}
+    // 2. Fetch all other users' data [cite: 28]
+    // We populate 'userId' to include basic account info (like email) in the response
+    const otherQuestionnaires = await Questionnaire.find({ userId: { $ne: req.user.userId } }).populate('userId', '-passwordHash');
+    const allOtherProfiles = await Profile.find({ userId: { $ne: req.user.userId } });
 
-// In real code, use real DB data instead of this mock
-const mockMatches = [
-  { id: '1', name: 'Samuel', compatibility: 88, budgetMin: 6000, budgetMax: 9000 },
-  { id: '2', name: 'Linda', compatibility: 72, budgetMin: 5000, budgetMax: 8000 },
-  { id: '3', name: 'Ben', compatibility: 91, budgetMin: 7000, budgetMax: 12000 },
-];
+    // 3. Calculate scores for each potential match [cite: 27, 49]
+    const results = otherQuestionnaires.map(otherQuest => {
+      // Find the corresponding profile for this specific user
+      const otherProf = allOtherProfiles.find(p => p.userId.toString() === otherQuest.userId._id.toString());
+      
+      // If a user has a questionnaire but no profile, skip or return 0 score
+      if (!otherProf) return null;
 
-router.get('/', async (req, res) => {
-  const userId = req.query.userId;
-  const budgetMin = Number(req.query.budgetMin) || 5000;
-  const budgetMax = Number(req.query.budgetMax) || 15000;
+      // Prepare data for the compatibility algorithm
+      const userA = { ...myData._doc, ...myProfile._doc };
+      const userB = { ...otherQuest._doc, ...otherProf._doc };
 
-  if (!userId) {
-    return res.status(400).json({ error: 'userId required' });
+      return {
+        user: otherQuest.userId,
+        profile: otherProf,
+        compatibility: computeCompatibility(userA, userB) // Automated score calculation [cite: 27]
+      };
+    }).filter(match => match !== null); // Remove null entries
+
+    // 4. Rank by compatibility and return results [cite: 28, 50, 78]
+    const rankedMatches = results
+      .filter(m => m.compatibility >= 40) // Threshold for "Must-Have" quality [cite: 78]
+      .sort((a, b) => b.compatibility - a.compatibility);
+
+    res.json({
+      success: true,
+      count: rankedMatches.length,
+      matches: rankedMatches
+    });
+
+  } catch (err) {
+    console.error('Matching Error:', err);
+    res.status(500).json({ error: "Internal Server Error - Matching engine failed." });
   }
-
-  // For now, filter by budget range
-  const filtered = mockMatches.filter(
-    (m) => m.budgetMin <= budgetMax && m.budgetMax >= budgetMin
-  );
-
-  // For now, just return as-is; later, sort by compatibility
-  res.json({
-    matches: filtered.sort((a, b) => b.compatibility - a.compatibility),
-  });
 });
 
 module.exports = router;
