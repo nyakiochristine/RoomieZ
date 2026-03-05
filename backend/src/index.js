@@ -15,6 +15,9 @@ const chatRoutes = require('./routes/chat');
 const app = express();
 const server = http.createServer(app); // 3. Create HTTP server from Express app
 
+const cors = require('cors');
+app.use(cors());
+
 // 4. Initialize Socket.io
 const io = new Server(server, {
   cors: {

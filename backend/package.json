@@ -8,7 +8,11 @@
     "test": "node test-db.js",
     "dev": "nodemon server.js"
   },
-  "keywords": ["mern", "cicd", "demo"],
+  "keywords": [
+    "mern",
+    "cicd",
+    "demo"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
