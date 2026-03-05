@@ -1,38 +1,56 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
+
   return (
+
     <div style={styles.nav}>
 
       <div style={styles.logo}>
-        <Link to="/" style={styles.link}>RoomieZ</Link>
+        <NavLink to="/" style={styles.logoLink}>
+          RoomieZ
+        </NavLink>
       </div>
 
       <div style={styles.links}>
 
-        <Link to="/" style={styles.link}>
+        <NavLink
+          to="/"
+          style={({ isActive }) => isActive ? styles.activeLink : styles.link}
+        >
           Dashboard
-        </Link>
+        </NavLink>
 
-        <span style={{ color: "#FF6F61", fontWeight: "600" }}>
+        <NavLink
+          to="/matches"
+          style={({ isActive }) => isActive ? styles.activeLink : styles.link}
+        >
           Find Roommates
-        </span>
+        </NavLink>
 
-        <span>
+        <NavLink
+          to="/messages"
+          style={({ isActive }) => isActive ? styles.activeLink : styles.link}
+        >
           Messages
-        </span>
+        </NavLink>
 
-        <Link to="/profile" style={styles.link}>
+        <NavLink
+          to="/profile"
+          style={({ isActive }) => isActive ? styles.activeLink : styles.link}
+        >
           Profile
-        </Link>
+        </NavLink>
 
       </div>
 
       <div style={styles.avatar}>👤</div>
 
     </div>
+
   );
+
 };
 
 const styles = {
@@ -51,20 +69,31 @@ const styles = {
     fontSize: "18px"
   },
 
+  logoLink: {
+    textDecoration: "none",
+    color: "#000"
+  },
+
   links: {
     display: "flex",
     gap: "30px",
-    color: "#666",
     alignItems: "center"
-  },
-
-  avatar: {
-    fontSize: "22px"
   },
 
   link: {
     textDecoration: "none",
-    color: "#666"
+    color: "#666",
+    fontWeight: "500"
+  },
+
+  activeLink: {
+    textDecoration: "none",
+    color: "#FF6F61",
+    fontWeight: "600"
+  },
+
+  avatar: {
+    fontSize: "22px"
   }
 
 };

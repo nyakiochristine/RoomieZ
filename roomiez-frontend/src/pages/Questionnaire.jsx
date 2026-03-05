@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ProgressBar from "../components/ProgressBar";
 import QuestionCard from "../components/QuestionCard";
@@ -105,6 +106,8 @@ const questions = [
 
 const Questionnaire = () => {
 
+  const navigate = useNavigate();
+
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({});
 
@@ -132,7 +135,7 @@ const Questionnaire = () => {
 
       localStorage.setItem("roomieAnswers", JSON.stringify(answers));
 
-      window.location.href = "/profile";
+      navigate("/profile");
 
     }
 
