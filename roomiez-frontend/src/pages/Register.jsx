@@ -2,32 +2,38 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
-const Login = () => {
+const Register = () => {
 
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
 
     e.preventDefault();
 
+    if (password !== confirm) {
+      setError("Passwords do not match");
+      return;
+    }
+
     try {
 
-      const res = await api.post("/auth/login", {
+      await api.post("/auth/register", {
         email,
         password
       });
 
-      localStorage.setItem("token", res.data.token);
+      alert("Account created successfully");
 
-      navigate("/profile");
+      navigate("/login");
 
     } catch (err) {
 
-      setError(err.response?.data?.error || "Login failed");
+      setError(err.response?.data?.error || "Registration failed");
 
     }
 
@@ -39,7 +45,7 @@ const Login = () => {
 
       <div style={styles.card}>
 
-        <h2>Login</h2>
+        <h2>Create Account</h2>
 
         <form onSubmit={handleSubmit}>
 
@@ -59,13 +65,34 @@ const Login = () => {
             style={styles.input}
           />
 
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            style={styles.input}
+          />
+
           {error && <p style={{ color: "red" }}>{error}</p>}
 
           <button style={styles.button}>
-            Login
+            Sign Up
           </button>
 
         </form>
+
+        <p style={{ marginTop: "15px" }}>
+
+          Already have an account?
+
+          <span
+            style={styles.link}
+            onClick={() => navigate("/login")}
+          >
+            Login
+          </span>
+
+        </p>
 
       </div>
 
@@ -110,8 +137,14 @@ const styles = {
     padding: "10px",
     borderRadius: "8px",
     cursor: "pointer"
+  },
+
+  link: {
+    color: "#FF6F61",
+    marginLeft: "5px",
+    cursor: "pointer"
   }
 
 };
 
-export default Login;
+export default Register;

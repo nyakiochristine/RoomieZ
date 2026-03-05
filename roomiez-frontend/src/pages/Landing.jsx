@@ -98,7 +98,7 @@ const Landing = () => {
 
         <button
           style={styles.primary}
-          onClick={() => navigate("/questionnaire")}
+          onClick={() => navigate("/register")}
         >
           Start Questionnaire
         </button>
