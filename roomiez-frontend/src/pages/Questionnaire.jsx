@@ -12,9 +12,9 @@ const questions = [
     subtitle: "Be honest! Cleanliness is a major compatibility factor.",
     tip: "Different cleanliness standards are one of the most common causes of roommate conflicts.",
     options: [
-      { value: "neat-freak", title: "Neat Freak", desc: "Everything must stay spotless." },
-      { value: "moderate", title: "Moderately Clean", desc: "I keep things tidy most of the time." },
-      { value: "organized-chaos", title: "Organized Chaos", desc: "Messy but I know where things are." }
+      { value: "neat-freak", title: "Neat Freak", desc: "Everything spotless." },
+      { value: "moderate", title: "Moderately Clean", desc: "Usually tidy." },
+      { value: "organized-chaos", title: "Organized Chaos", desc: "Messy but functional." }
     ]
   },
 
@@ -22,11 +22,11 @@ const questions = [
     id: "sleepSchedule",
     title: "What is your sleep schedule?",
     subtitle: "Matching schedules reduces conflicts.",
-    tip: "Roommates with different sleep patterns can unintentionally disturb each other.",
+    tip: "Different sleep patterns can disturb roommates.",
     options: [
-      { value: "early-bird", title: "Early Bird", desc: "Sleep early, wake early." },
-      { value: "night-owl", title: "Night Owl", desc: "Stay up late most nights." },
-      { value: "flexible", title: "Flexible", desc: "My schedule changes often." }
+      { value: "early-bird", title: "Early Bird", desc: "Sleep early." },
+      { value: "night-owl", title: "Night Owl", desc: "Stay up late." },
+      { value: "flexible", title: "Flexible", desc: "Changes often." }
     ]
   },
 
@@ -34,11 +34,11 @@ const questions = [
     id: "socialLevel",
     title: "How often do you bring guests over?",
     subtitle: "Guest frequency affects roommate comfort.",
-    tip: "Frequent visitors may impact privacy and shared space.",
+    tip: "Frequent guests may impact shared living spaces.",
     options: [
       { value: "frequent-guests", title: "Frequent Guests", desc: "Friends visit often." },
-      { value: "occasional", title: "Occasional Guests", desc: "Sometimes." },
-      { value: "private-sanctuary", title: "Private Space", desc: "Rarely invite people over." }
+      { value: "occasional", title: "Occasional", desc: "Sometimes." },
+      { value: "private-sanctuary", title: "Private Space", desc: "Rarely invite people." }
     ]
   },
 
@@ -46,10 +46,10 @@ const questions = [
     id: "noiseTolerance",
     title: "What is your noise tolerance?",
     subtitle: "Noise tolerance affects living comfort.",
-    tip: "Different noise tolerances can lead to frustration between roommates.",
+    tip: "Different noise preferences can create tension between roommates.",
     options: [
-      { value: "silence-needed", title: "Silence Needed", desc: "I need quiet to focus." },
-      { value: "moderate-noise", title: "Moderate Noise", desc: "Some noise is okay." },
+      { value: "silence-needed", title: "Silence Needed", desc: "Prefer quiet." },
+      { value: "moderate-noise", title: "Moderate Noise", desc: "Some noise ok." },
       { value: "can-sleep-anywhere", title: "High Tolerance", desc: "Noise doesn't bother me." }
     ]
   },
@@ -58,10 +58,10 @@ const questions = [
     id: "studyEnvironment",
     title: "Where do you usually study?",
     subtitle: "Study habits affect room usage.",
-    tip: "Some roommates need quiet study spaces while others study outside the room.",
+    tip: "Study habits determine how shared spaces are used.",
     options: [
-      { value: "study-at-home", title: "Study at Home", desc: "I prefer studying in my room." },
-      { value: "study-at-library", title: "Library", desc: "I usually go to the library." },
+      { value: "study-at-home", title: "At Home", desc: "Study in room." },
+      { value: "study-at-library", title: "Library", desc: "Prefer library." },
       { value: "mix", title: "Mix", desc: "Depends on the day." }
     ]
   },
@@ -69,12 +69,12 @@ const questions = [
   {
     id: "sharingPolicy",
     title: "How do you feel about sharing items?",
-    subtitle: "Sharing policies can prevent conflicts.",
-    tip: "Clear boundaries about sharing help avoid misunderstandings.",
+    subtitle: "Sharing policies prevent conflict.",
+    tip: "Clear sharing boundaries prevent misunderstandings.",
     options: [
-      { value: "share-everything", title: "Share Everything", desc: "Feel free to use my things." },
-      { value: "ask-first", title: "Ask First", desc: "Just ask before using." },
-      { value: "do-not-share", title: "Do Not Share", desc: "I prefer personal items." }
+      { value: "share-everything", title: "Share Everything", desc: "Use anything." },
+      { value: "ask-first", title: "Ask First", desc: "Ask before using." },
+      { value: "do-not-share", title: "Do Not Share", desc: "Prefer personal items." }
     ]
   },
 
@@ -82,7 +82,7 @@ const questions = [
     id: "smoking",
     title: "Do you smoke or vape?",
     subtitle: "Important for roommate comfort.",
-    tip: "Smoking preferences strongly influence compatibility.",
+    tip: "Smoking preferences can significantly impact compatibility.",
     options: [
       { value: true, title: "Yes", desc: "I smoke or vape." },
       { value: false, title: "No", desc: "I do not smoke." }
@@ -93,11 +93,11 @@ const questions = [
     id: "introversion",
     title: "How would you describe your personality?",
     subtitle: "Personality compatibility matters.",
-    tip: "Matching personality types helps improve communication and living harmony.",
+    tip: "Matching personality types improves living harmony.",
     options: [
-      { value: "introverted", title: "Introverted", desc: "I enjoy quiet time alone." },
-      { value: "extroverted", title: "Extroverted", desc: "I enjoy social interaction." },
-      { value: "ambiverted", title: "Ambiverted", desc: "A balance of both." }
+      { value: "introverted", title: "Introverted", desc: "Prefer quiet time." },
+      { value: "extroverted", title: "Extroverted", desc: "Love social interaction." },
+      { value: "ambiverted", title: "Ambiverted", desc: "Balance of both." }
     ]
   }
 
@@ -111,26 +111,42 @@ const Questionnaire = () => {
   const currentQuestion = questions[step];
   const selected = answers[currentQuestion.id];
 
-  const handleSelect = value => {
+  const handleSelect = (value) => {
+
     setAnswers({
       ...answers,
       [currentQuestion.id]: value
     });
+
   };
 
   const handleNext = () => {
+
     if (!selected) return;
-    if (step < questions.length - 1) setStep(step + 1);
-    else console.log("Submitting answers:", answers);
+
+    if (step < questions.length - 1) {
+
+      setStep(step + 1);
+
+    } else {
+
+      localStorage.setItem("roomieAnswers", JSON.stringify(answers));
+
+      window.location.href = "/profile";
+
+    }
+
   };
 
   const handlePrevious = () => {
+
     if (step > 0) setStep(step - 1);
+
   };
 
   useEffect(() => {
 
-    const handleKey = e => {
+    const handleKey = (e) => {
 
       if (e.key === "ArrowRight") handleNext();
       if (e.key === "ArrowLeft") handlePrevious();
@@ -170,9 +186,7 @@ const Questionnaire = () => {
             className="primary-button"
             disabled={!selected}
           >
-
             {step === questions.length - 1 ? "Finish" : "Next Question →"}
-
           </button>
 
         </div>
