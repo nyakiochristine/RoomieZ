@@ -1,20 +1,48 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import OptionCard from "./OptionCard";
 
 const QuestionCard = ({ question, selected, setSelected }) => {
 
+  const [typedTitle, setTypedTitle] = useState("");
+
+  useEffect(() => {
+
+    if (!question) return;
+
+    let index = 0;
+    setTypedTitle("");
+
+    const typing = setInterval(() => {
+
+      index++;
+
+      setTypedTitle(question.title.slice(0, index));
+
+      if (index === question.title.length) {
+        clearInterval(typing);
+      }
+
+    }, 30);
+
+    return () => clearInterval(typing);
+
+  }, [question]);
+
   if (!question) return null;
 
   return (
-    <div style={styles.card}>
 
-      <span style={styles.tag}>HABITS</span>
+    <div className="question-card slide-in">
 
-      <h2>{question.title}</h2>
-      <p style={{ color: "#777" }}>{question.subtitle}</p>
+      <span className="category-tag">HABITS</span>
 
-      <div style={styles.options}>
-        {question.options.map((opt) => (
+      <h2 className="question-title">{typedTitle}</h2>
+
+      <p className="question-subtitle">{question.subtitle}</p>
+
+      <div className="options-grid">
+
+        {question.options.map(opt => (
           <OptionCard
             key={opt.value}
             option={opt}
@@ -22,35 +50,12 @@ const QuestionCard = ({ question, selected, setSelected }) => {
             onSelect={setSelected}
           />
         ))}
+
       </div>
 
     </div>
+
   );
-};
-
-const styles = {
-  card: {
-    background: "white",
-    padding: "40px",
-    borderRadius: "16px",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
-  },
-
-  tag: {
-    background: "#FFE8E6",
-    padding: "5px 10px",
-    borderRadius: "12px",
-    fontSize: "12px",
-    color: "#FF6F61",
-  },
-
-  options: {
-    marginTop: "25px",
-    display: "flex",
-    gap: "20px",
-    justifyContent: "center",
-    flexWrap: "wrap",
-  },
 };
 
 export default QuestionCard;
