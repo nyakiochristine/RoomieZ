@@ -32,7 +32,7 @@ async function testConnection() {
     const inserted = await testCollection.findOne({ _id: result.insertedId });
     console.log('📄 Inserted document:', inserted);
     
-    // Test 4: Test indexing (create if doesn't exist)
+   
     await testCollection.createIndex({ timestamp: -1 });
     console.log('🔖 Indexes verified');
     
