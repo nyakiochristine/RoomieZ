@@ -21,7 +21,7 @@ app.use(cors());
 // 4. Initialize Socket.io
 const io = new Server(server, {
   cors: {
-    origin: "*", // Adjust for production (e.g., your Vercel URL)
+    origin: "*", 
     methods: ["GET", "POST"]
   }
 });

@@ -1,7 +1,4 @@
-/**
- * Logic for Person 1 & 3: Compatibility Engine
- * Calculates a score from 0-100 based on questionnaire responses[cite: 78, 49].
- */
+
 
 const computeCompatibility = (userA, userB) => {
   let score = 0;
