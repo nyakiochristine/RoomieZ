@@ -6,7 +6,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Questionnaire from "./pages/Questionnaire";
 import Profile from "./pages/Profile";
-import EditProfile from "./pages/EditProfile";
+
 import Matches from "./pages/Matches";
 import Messages from "./pages/Messages";
 
